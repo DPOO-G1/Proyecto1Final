@@ -226,6 +226,6 @@ public class Consola {
 		
 		
 	}
-//prueba
+//prueba commit 2
 
 }
