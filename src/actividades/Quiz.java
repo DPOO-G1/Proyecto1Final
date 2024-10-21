@@ -24,6 +24,23 @@ public class Quiz extends Actividad {
 	public void addPregunta(PreguntaCerrada pregunta) {
 		this.preguntas.add(pregunta);
 	}
+
+	public List<PreguntaCerrada> getPreguntas() {
+		return preguntas;
+	}
+
+	public void setPreguntas(List<PreguntaCerrada> preguntas) {
+		this.preguntas = preguntas;
+	}
+
+	public double getCalificacionMin() {
+		return calificacionMin;
+	}
+
+	public void setCalificacionMin(double calificacionMin) {
+		this.calificacionMin = calificacionMin;
+	}
+	
 	
 
 }
