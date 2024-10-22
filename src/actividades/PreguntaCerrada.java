@@ -40,5 +40,10 @@ public class PreguntaCerrada extends Pregunta {
 		this.opciones = opciones;
 	}
 	
+	public String getCuerpo() {
+		return this.cuerpo;
+		
+	}
+	
 	
 }

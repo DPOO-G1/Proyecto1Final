@@ -4,18 +4,18 @@ import java.util.Date;
 import java.util.List;
 
 public class Examen extends Actividad {
+    
+	public List<PreguntaAbierta> preguntas; 
+    public Examen(String descripcion, String objetivo, String nivelDificultad, double duracion,
+                  Date fechaLim, boolean obligatoria, List<PreguntaAbierta> preguntas) {
+        super("Examen", descripcion, objetivo, nivelDificultad, duracion, fechaLim, obligatoria);
+        this.preguntas = preguntas;
+    }
+    public List<PreguntaAbierta> getPreguntas() {
+        return preguntas;
+    }
 
-	public Examen(String descripcion, String objetivo, String nivelDificultad, int duracion,
-			List<Actividad> actividadesPrerrequisito, Date fechaLim, List<Actividad> actividadesOpcionales,
-			boolean obligatoria) {
-		super("Examen",descripcion, objetivo, nivelDificultad, duracion,  fechaLim, obligatoria);
-		// TODO Auto-generated constructor stub
-	}
-
-	@Override
-	public void menu() {
-		// TODO Auto-generated method stub
-		
-	}
-
+    @Override
+    public void menu() {
+    }
 }

@@ -9,6 +9,12 @@ import java.util.Map;
 import java.util.Scanner;
 
 import actividades.Actividad;
+import actividades.Encuesta;
+import actividades.Examen;
+import actividades.Opcion;
+import actividades.PreguntaAbierta;
+import actividades.PreguntaCerrada;
+import actividades.Quiz;
 import actividades.Recurso;
 import learningPath.LearningPath;
 import persistencia.PersistenciaUsuarios;
@@ -159,8 +165,30 @@ public class Consola {
 	                				System.out.println(learningpath.getActividades().get(i).getDescripcion());
 	                				System.out.println(learningpath.getActividades().size());
 	                    		}
-	                    		
-	                    		
+	                    	}
+	                    	else if (tipoActividad == 3) {
+	                            	Quiz quiz = (Quiz) crearQuiz();
+		                    		persistencia.PersistenciaActividades.guardarRecursosCSV(quiz);
+	                            	learningpath.addActividad(quiz);
+
+		       		
+		                    		for(int i = 0; i<learningpath.getActividades().size();i++) {
+		                    			
+		                				System.out.println(learningpath.getActividades().get(i).getDescripcion());
+		                				System.out.println(learningpath.getActividades().size());
+		                    		}
+		                    		}
+		                    else if (tipoActividad == 3) {
+		                            	Examen examen = (Examen) crearExamen();
+			                    		persistencia.PersistenciaActividades.guardarRecursosCSV(examen);
+		                            	learningpath.addActividad(examen);
+
+			       		
+			                    		for(int i = 0; i<learningpath.getActividades().size();i++) {
+			                    			
+			                				System.out.println(learningpath.getActividades().get(i).getDescripcion());
+			                				System.out.println(learningpath.getActividades().size());
+			                    		}
                     		}
                     	}
                     }
@@ -208,6 +236,169 @@ public class Consola {
     	
     }
 
+    
+    
+    
+    public static Actividad crearQuiz() {
+    	System.out.println("Ingrese la descripción: ");
+    	String descripcion = scanner.nextLine();
+    	System.out.println("Ingrese el objetivo: ");
+    	String objetivo = scanner.nextLine();
+    	System.out.println("Ingrese el nivel de dificultad: ");
+    	String nivelDificultad = scanner.nextLine();
+    	System.out.println("Ingrese la duración esperada en minutos: ");
+    	int duracion = scanner.nextInt();
+    	scanner.nextLine();
+    	System.out.println("Ingrese la fecha límite sugerida (yyyy-mm-dd: ");
+    	String fechaLim = scanner.nextLine();
+    	System.out.println("Es obligatoria (1:Si | 0:NO): ");
+    	int obligatoria = scanner.nextInt();
+    	scanner.nextLine();
+    	boolean esObligatoria = opcional(obligatoria);
+    	Date fechaLimite = convertirFecha(fechaLim);
+    	System.out.println("Ingrese la cantidad de preguntas que va a tener el quiz: ");
+		int cantidadPreguntas = scanner.nextInt();
+		System.out.println("Ingrese el minimo para pasar: ");
+		int minimoQuiz = scanner.nextInt();
+		Quiz quiz = new Quiz(descripcion, objetivo, nivelDificultad, duracion, fechaLimite, minimoQuiz, esObligatoria);
+		for(int i = 1; i<= cantidadPreguntas; i++) {
+		
+			System.out.println("Ingrese la explicacion de la pregunta: ");
+			String explicacion = scanner.nextLine();
+			System.out.println("Ingrese el numero opciones de la pregunta (4 max): ");
+			int cantidadOpciones = scanner.nextInt();
+			try {
+				Map<String, List<Opcion>> mapaOpciones =crearOpcionesPregunta(cantidadOpciones);
+				List<Opcion> listaOpciones =mapaOpciones.get("lista");
+				List<Opcion> listaCorrecta =mapaOpciones.get("correcta");
+				Opcion opcionCorrecta =listaCorrecta.get(0);
+				PreguntaCerrada pregunta = new PreguntaCerrada(explicacion, listaOpciones,opcionCorrecta);
+				quiz.addPregunta(pregunta);
+			
+			}
+			catch (IllegalArgumentException e) {
+				System.out.print("Error: Numero de opciones mayor a 4");
+				menu();
+			}
+			
+			
+		}
+		
+		
+		return quiz;
+		
+    
+    }
+    
+    public static Actividad crearExamen() {
+    	System.out.println("Ingrese la descripción: ");
+    	String descripcion = scanner.nextLine();
+    	System.out.println("Ingrese el objetivo: ");
+    	String objetivo = scanner.nextLine();
+    	System.out.println("Ingrese el nivel de dificultad: ");
+    	String nivelDificultad = scanner.nextLine();
+    	System.out.println("Ingrese la duración esperada en minutos: ");
+    	int duracion = scanner.nextInt();
+    	scanner.nextLine();
+    	System.out.println("Ingrese la fecha límite sugerida (yyyy-mm-dd: ");
+    	String fechaLimStr = scanner.nextLine();
+    	System.out.println("Es obligatoria (1:Si | 0:NO): ");
+    	int obligatoria = scanner.nextInt();
+    	scanner.nextLine();
+    	boolean esObligatoria = opcional(obligatoria);
+    	System.out.println("Ingrese la cantidad de preguntas: ");
+    	int cantidadPreguntas = scanner.nextInt();
+    	List<PreguntaAbierta> preguntas = new ArrayList<>();
+    	for(int i =0;i<cantidadPreguntas;i++) {
+    		System.out.println("Escriba la pregunta abierta: ");
+        	String cuerpoPregunta = scanner.nextLine();
+        	PreguntaAbierta preguntaAbierta= new PreguntaAbierta(cuerpoPregunta);
+        	preguntas.add(preguntaAbierta);
+    	}
+    	Date fechaLim = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            fechaLim = sdf.parse(fechaLimStr);
+        } catch (ParseException e) {
+            System.out.println("Formato de fecha incorrecto.");
+            return null; 
+        }
+    	Examen examen = new Examen(descripcion, objetivo, nivelDificultad, duracion, fechaLim, esObligatoria, preguntas);
+    	return examen;
+    }
+    
+    public static Actividad crearEncuesta() {
+    	System.out.println("Ingrese la descripción: ");
+    	String descripcion = scanner.nextLine();
+    	System.out.println("Ingrese el objetivo: ");
+    	String objetivo = scanner.nextLine();
+    	System.out.println("Ingrese el nivel de dificultad: ");
+    	String nivelDificultad = scanner.nextLine();
+    	System.out.println("Ingrese la duración esperada en minutos: ");
+    	int duracion = scanner.nextInt();
+    	scanner.nextLine();
+    	System.out.println("Ingrese la fecha límite sugerida (yyyy-mm-dd: ");
+    	String fechaLimStr = scanner.nextLine();
+    	System.out.println("Es obligatoria (1:Si | 0:NO): ");
+    	int obligatoria = scanner.nextInt();
+    	scanner.nextLine();
+    	boolean esObligatoria = opcional(obligatoria);
+    	System.out.println("Ingrese la cantidad de preguntas: ");
+    	int cantidadPreguntas = scanner.nextInt();
+    	List<PreguntaAbierta> preguntas = new ArrayList<>();
+    	for(int i =0;i<cantidadPreguntas;i++) {
+    		System.out.println("Escriba la pregunta abierta: ");
+        	String cuerpoPregunta = scanner.nextLine();
+        	PreguntaAbierta preguntaAbierta= new PreguntaAbierta(cuerpoPregunta);
+        	preguntas.add(preguntaAbierta);
+    	
+    	}
+    	Date fechaLim = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            fechaLim = sdf.parse(fechaLimStr);
+        } catch (ParseException e) {
+            System.out.println("Formato de fecha incorrecto.");
+            return null; 
+        }
+    	Encuesta encuesta = new Encuesta(descripcion, objetivo, nivelDificultad, duracion, fechaLim, esObligatoria, preguntas);
+    	return encuesta;
+    }
+    
+    public static Map<String, List<Opcion>> crearOpcionesPregunta(int cantidadOpciones) { 
+    	if (cantidadOpciones >5 ) {
+    		throw new IllegalArgumentException();
+    		
+    	}
+    	else {
+    		
+    		Map<String, List<Opcion>> mapaRetorno= new  HashMap<>();
+    		List<Opcion> listaOpciones= new ArrayList<Opcion>();
+    		for(int i= 1;i<=cantidadOpciones;i++) {
+    			System.out.print("De la explicación de la opción");
+    			String explicacionOpcion = scanner.nextLine();
+    			Opcion opcion = new Opcion(explicacionOpcion);
+    			System.out.print("Es una opcion correcta ?(1:Si | 0:NO)");
+    			int correcta = scanner.nextInt();
+    			if(correcta == 1) {
+    				Opcion opcionCorrecta=opcion;
+    				List<Opcion> opcionCorrectaLista= new ArrayList<Opcion>();
+    				opcionCorrectaLista.add(opcionCorrecta);
+    				mapaRetorno.put("correcta", listaOpciones);
+    			}
+    			listaOpciones.add(opcion);
+    			
+    		}
+    		mapaRetorno.put("lista", listaOpciones);
+    		
+    		
+    		
+    		return mapaRetorno ;
+    	}
+    	
+    	
+    	
+    }
 	public static boolean opcional(int opcion) {
 		if (opcion == 1) {
 			return true;

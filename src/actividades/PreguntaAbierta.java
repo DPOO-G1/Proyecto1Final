@@ -6,5 +6,9 @@ public class PreguntaAbierta extends Pregunta {
 		super(cuerpo);
 		
 	}
-
+	
+	public String getCuerpo() {
+		return this.cuerpo;
+		
+	}
 }
